@@ -1,27 +1,20 @@
 <template>
   <p>
-    {{props.name}}：{{props.content}}
+    {{content}}
   </p>
 </template>
 
 <script>
-import {defineComponent,defineProps} from "vue";
+import {defineComponent,defineProps,ref,computed} from "vue";
 
 export default defineComponent({
-  setup(){
-    const props = defineProps({
-      name:{
-        type:String,
-        default:'***'
-      },
-      content:{
-        type:String,
-        default:'****'
-      }
-    })
-    return {
-      props
-    }
+  props: {
+    content: {
+      type: Object,
+    },
+  },
+  setup(props){
+
   }
 
 })

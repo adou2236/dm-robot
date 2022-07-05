@@ -27,8 +27,9 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
     (response) => {
+        const {status} = response
         const { code, msg } = response.data;
-        if (code === 0) {
+        if (status === 200) {
             return response.data;
         } else {
             // 响应数据为二进制流处理(Excel导出)

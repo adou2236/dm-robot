@@ -10,3 +10,42 @@ export function getRealUrl(roomId){
         params
     })
 }
+
+export function getQrcode(){
+    return service({
+        baseURL:'https://passport.bilibili.com/qrcode/getLoginUrl',
+        method:'get',
+    })
+}
+
+export function checkLogin(data){
+    return service({
+        baseURL: 'https://passport.bilibili.com/qrcode/getLoginInfo',
+        method:'post',
+        params: data
+    })
+}
+
+export function getUserId(){
+    return service({
+        baseURL: 'https://api.live.bilibili.com/User/getUserInfo',
+        method: 'get'
+    })
+}
+
+export function getUserInfoById(UID){
+    return service({
+        baseURL: `https://api.bilibili.com/x/space/acc/info`,
+        method: 'get',
+        params:{
+            mid:UID
+        },
+    })
+}
+
+export function isLogin(){
+    return service({
+        baseURL: 'https://passport.bilibili.com/qrcode/getLoginUrl',
+        method: 'get'
+    })
+}

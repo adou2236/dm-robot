@@ -1,5 +1,5 @@
 import pako from 'pako'
-import {ACC_TYPE,MSG_CODE} from "@/assets/config/default_config";
+import {ACC_TYPE, ACTIVE_CODE, CODE_ZH, MSG_CODE} from "@/assets/config/default_config";
 //字符串转Uint8Array
 export const stringToUint = function (s) {
     const charList = s.split('');
@@ -55,7 +55,11 @@ export const receiveData = function (data) {
     //序列号 通常为1
     const sequence = dv.getUint32(12);
     data = data.slice(headerLen, packageLen);
-    return dataFormate(0,protover,operation,data)
+    let wholeData = dataFormate(0,protover,operation,data)
+    return wholeData.map(item=>item.content).filter(i=>{
+        return i?.cmd && ACTIVE_CODE.includes(i.cmd)
+
+    })
 
 }
 //处理解压后的arraybuffer
@@ -72,7 +76,7 @@ export const unzip = function (data) {
         const protover = dv.getUint16(6);
         const operation = dv.getUint32(8);
         let datas = data.slice(headerLen, packageLen)
-        result.push(dataFormate(1,protover,operation,datas))
+        result = result.concat(dataFormate(1,protover,operation,datas))
         offect += packageLen;
         len = packageLen;
     }
@@ -80,7 +84,6 @@ export const unzip = function (data) {
 }
 
 const dataFormate = function(type,protover,operation,data){
-    console.log(protover,operation)
     let content = ''
     let contents = []
     let dataV = ''
@@ -121,11 +124,62 @@ const dataFormate = function(type,protover,operation,data){
     }
     let obj = null
     if(content){
+        let jsonContent = JSON.parse(content)
         obj = {
             code:protover,
-            content:JSON.parse(content)
+            codeZH: CODE_ZH.getCodesZH(protover),
+            content:{
+                ...jsonContent,
+                cmdZH:CODE_ZH.getCommandsZH(jsonContent.cmd)
+            }
         }
+        contents.push(obj)
     }
-    return [...contents,obj]
+
+    return contents
+
+}
+
+export function dmRead(str,speed = 5){
+    let url = `https://fanyi.baidu.com/gettts?lan=zh&spd=${speed}&source=web&text=${str}`
+    return new Audio(url)
+}
+
+//数据格式化
+export function dmFormatter(data){
+    let {cmd} = data
+    let result = {}
+    switch(cmd){
+        //弹幕信息
+        case 'DANMU_MSG':
+            result = {
+                uname: data.info[2][1],
+                msg: data.info[1]
+            }
+            break;
+        //进入
+        case 'INTERACT_WORD':
+            result = {
+                uname: data.data.uname
+            }
+            break;
+        //赠送
+        case 'SEND_GIFT':
+            result = {
+                uname: data.data.uname,
+                action: data.data.action,
+                giftName: data.data.giftName,
+                num: data.data.num
+            }
+            break;
+        case '':
+        default :
+            result = {}
+    }
+    return result
+}
+
+
+export function jsonFormate(json){
 
 }

@@ -1,12 +1,21 @@
-const Store = require('electron-store');
+import { createStore, useStore as baseUseStore, Store } from 'vuex';
+import user from './modules/user'
+import config from './modules/config'
+import message from './modules/message'
 
-let option={
-    name:"dmrobot-config",//文件名称,默认 config
-    fileExtension:"json",//文件后缀,默认json
-    clearInvalidConfig:true, // 发生 SyntaxError  则清空配置,
+
+
+const modules = {
+    user,
+    config,
+    message
 }
-const  store = new Store(option);
 
-export const getSetting = (key) => store.get(key)
 
-export const setSetting = (key,value) => store.set(key,value)
+export const store = createStore({ modules });
+export const key = Symbol();
+
+
+export function useStore() {
+    return baseUseStore(key);
+}

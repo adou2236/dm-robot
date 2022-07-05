@@ -6,11 +6,11 @@ import Panel from '/src/views/panel/index.vue'
 
 export const constantRoutes= [
     {
-        path: '/',
+        path: '/login',
         component: Login,
     },
     {
-        path: '/setting',
+        path: '/',
         component: Setting
     },
     {
