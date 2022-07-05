@@ -8,7 +8,7 @@
 import {computed, defineComponent, defineEmits, onBeforeUnmount, onMounted, ref} from "vue";
 import {ACC_TYPE, WS_URL} from "@/assets/config/default_config";
 import {createSocket} from "@/api/websocket";
-import { receiveData, sendData} from "@/utils/common";
+import {dataToTTS, dmFormatter, receiveData, sendData} from "@/utils/common";
 import DmItem from "@/views/panel/components/dmItem";
 
 export default defineComponent({
@@ -67,7 +67,9 @@ export default defineComponent({
       reader.onload =  (event) => {
         let content = reader.result;
         let res = receiveData(content); // 处理
-        dmList.value = dmList.value.concat(res)
+        res.forEach((item)=>{
+          dmList.value.push(dataToTTS(dmFormatter(item)))
+        })
         context.emit('onMessage',res)
       };
     }

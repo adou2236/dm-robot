@@ -11,7 +11,7 @@
         </a-row>
       </a-form-item>
     </a-form>
-    <infiti-scroll roomId="23982773" @onMessage="receiveMessage"></infiti-scroll>
+    <infiti-scroll roomId="7100183" @onMessage="receiveMessage"></infiti-scroll>
 
   </div>
 </template>
@@ -21,6 +21,7 @@ import {defineComponent, computed, watch, ref, onMounted} from 'vue';
 import {useStore} from "@/store";
 import {Form,FormItem,Checkbox,Switch,Input,Row} from 'ant-design-vue'
 import InfitiScroll from "@/views/panel/components/infitiScroll";
+import {dataToTTS, dmFormatter} from "@/utils/common";
 export default defineComponent({
   components:{
     InfitiScroll,
@@ -51,9 +52,8 @@ export default defineComponent({
 
     function receiveMessage(message){
       message.forEach(item=>{
-        console.log(item)
-        // let msg = item.info[1]
-        // store.dispatch('message/readMessage', {msg:`测试弹幕${testAB.value}`,speed:5})
+        let msg = dataToTTS(dmFormatter(item))
+        store.dispatch('message/readMessage', {msg,speed:5})
       })
 
     }

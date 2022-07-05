@@ -1,5 +1,7 @@
 import pako from 'pako'
 import {ACC_TYPE, ACTIVE_CODE, CODE_ZH, MSG_CODE} from "@/assets/config/default_config";
+import {store} from '@/store'
+
 //字符串转Uint8Array
 export const stringToUint = function (s) {
     const charList = s.split('');
@@ -149,10 +151,12 @@ export function dmRead(str,speed = 5){
 export function dmFormatter(data){
     let {cmd} = data
     let result = {}
+    result.cmd = cmd
     switch(cmd){
         //弹幕信息
         case 'DANMU_MSG':
             result = {
+                ...result,
                 uname: data.info[2][1],
                 msg: data.info[1]
             }
@@ -160,12 +164,14 @@ export function dmFormatter(data){
         //进入
         case 'INTERACT_WORD':
             result = {
+                ...result,
                 uname: data.data.uname
             }
             break;
         //赠送
         case 'SEND_GIFT':
             result = {
+                ...result,
                 uname: data.data.uname,
                 action: data.data.action,
                 giftName: data.data.giftName,
@@ -177,6 +183,29 @@ export function dmFormatter(data){
             result = {}
     }
     return result
+}
+
+//字幕格式化
+export function dataToTTS(data){
+    let tts = ''
+    let {cmd} = data
+    let dmTempalte = store.state.config.streamConfig.danmu.template
+    let giftTemplate = store.state.config.streamConfig.gift.template
+    let welcomeTemplate = store.state.config.streamConfig.welcome.template
+    switch(cmd){
+        case 'DANMU_MSG':
+            tts = dmTempalte.replace(/\{%name%\}/g,data.uname).replace(/\{%message%\}/g,data.msg);
+            break;
+        case 'INTERACT_WORD':
+            tts = welcomeTemplate.replace(/\{%name%\}/g,data.uname);
+            break;
+        case 'SEND_GIFT':
+            tts = giftTemplate.replace(/\{%name%\}/g,data.uname).replace(/\{%num%\}/g,data.num).replace(/\{%gift%\}/g,data.giftName);
+            break;
+        default:
+            tts = ''
+    }
+    return tts
 }
 
 

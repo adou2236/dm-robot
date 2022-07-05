@@ -9,25 +9,22 @@ const configModule = {
                 keys:['DANMU_MSG'],
                 active:true,
                 sound:true,
-                template: '{name}说{message}'
+                template: '{%name%}说{%message%}'
             },
             gift:{
                 label:'礼物设置',
                 keys:['COMBO_SEND','SEND_GIFT'],
                 active:true,
                 sound: true,
-                template: '感谢{name}送出的{gift}'
+                template: '{%name%}送出{%num%}个{%gift%}'
             },
             welcome:{
                 label:'欢迎设置',
                 keys:['INTERACT_WORD','WELCOME','WELCOME_GUARD'],
                 active:true,
                 sound: true,
-                template: '欢迎{name}进入直播间'
+                template: '欢迎{%name%}进入直播间'
             }
-
-
-
         },
         //自动设置
         autoconfig:{},
@@ -46,7 +43,18 @@ const configModule = {
             commit('SET_STREAMCONFIG',data)
         }
     },
-    getters: {}
+    getters: {
+        danmuTempalte(state){
+            return state.streamConfig.danmu
+        },
+        giftTemplate(state){
+            return state.streamConfig.gift
+        },
+        welcomeTemplate(state){
+            return state.streamConfig.welcome
+        }
+
+    }
 };
 
 export default configModule;
